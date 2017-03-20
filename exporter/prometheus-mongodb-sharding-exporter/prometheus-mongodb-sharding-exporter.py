@@ -4,7 +4,7 @@ from pymongo.errors import OperationFailure
 from prometheus_client import start_http_server, Gauge
 from prometheus_client.core import GaugeMetricFamily, CounterMetricFamily, REGISTRY
 from multiprocessing.dummy import Pool as ThreadPool
-import json
+import json,os
 
 MAX_THREADS = 5
 
@@ -12,7 +12,7 @@ MAX_THREADS = 5
 def get_hots():
     hosts = {}
     try:
-        client = MongoClient('mongodb://mongos1:port1[,mongos2:port2,mongo3:port3...]')
+        client = MongoClient(MONGOS_URI)
         data = client.admin.command("listShards")
         shard = list()
         for s in data["shards"]:
@@ -132,7 +132,9 @@ if __name__ == "__main__":
 
     from prometheus_client import make_wsgi_app
     from wsgiref.simple_server import make_server
+    #mongodb://mongos1:port1[,mongos2:port2,mongo3:port3...]
+    MONGOS_URI = os.getenv("MONGO_URI","mongodb://127.0.0.1:27017")
+
     app = make_wsgi_app(CustomCollector())
     httpd = make_server('', 8000, app)
     httpd.serve_forever()
-
