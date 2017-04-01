@@ -4,7 +4,7 @@ from pymongo.errors import OperationFailure
 from prometheus_client import start_http_server, Gauge
 from prometheus_client.core import GaugeMetricFamily, CounterMetricFamily, REGISTRY
 from multiprocessing.dummy import Pool as ThreadPool
-import json,os
+import json,os,re
 
 MAX_THREADS = 5
 
@@ -23,6 +23,7 @@ def get_hots():
         hosts["shards"] = shard
         config = client.admin.command("getShardMap")
         hosts["config"] = [re.sub(r".*/",r"",x) for x in config["map"]["config"].split(",")]
+        #print hosts
     except Exception as e:
         print e
     finally:
