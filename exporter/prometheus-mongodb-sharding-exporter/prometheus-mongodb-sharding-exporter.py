@@ -22,7 +22,7 @@ def get_hots():
             shard.append(tmp)
         hosts["shards"] = shard
         config = client.admin.command("getShardMap")
-        hosts["config"] = config["map"]["config"].split(",")
+        hosts["config"] = [re.sub(r".*/",r"",x) for x in config["map"]["config"].split(",")]
     except Exception as e:
         print e
     finally:
